@@ -24,6 +24,7 @@ public class GenerativeTextingSystem extends ScriptableService {
     private let chatScrollController: wref<inkScrollController>;
     private let typingIndicator: wref<inkFlex>;
     private let lastActiveCharacter: CharacterSetting = CharacterSetting.Panam;
+    private let unreadCharacter: CharacterSetting = CharacterSetting.Panam;
     private let unread: Bool = false;
     private let disabled: Bool = false;
 
@@ -213,9 +214,8 @@ public class GenerativeTextingSystem extends ScriptableService {
 
         if Equals(s"\(event.GetKey())", "IK_C") {
             if this.chatOpen {
-                this.npcSelected = false;
                 this.chatOpen = false;
-                this.ShowPhoneUI();
+                this.ShowPhoneUi();
             } else {
                 return;
             }
@@ -367,7 +367,7 @@ public class GenerativeTextingSystem extends ScriptableService {
     // Hide the default phone UI
     public func HidePhoneUi() {
         if IsDefined(this.defaultPhoneController) {            
-            this.defaultPhoneController.DisableContactsInput();
+            this.ToggleContactInput(false);
             this.ToggleContactList(false);
             this.ShowModChat();
         } else {
@@ -376,15 +376,27 @@ public class GenerativeTextingSystem extends ScriptableService {
     }
 
     // Show the default phone UI
-    private func ShowPhoneUI() {
+    private func ShowPhoneUi() {
         if (IsDefined(this.defaultPhoneController) && IsDefined(this.contactListSlot)) {            
-            this.defaultPhoneController.EnableContactsInput();
             this.ToggleContactList(true);
+            this.PlaySound(n"ui_menu_map_pin_off");
+            this.DelayedContactInput();
         } else {
             this.InitializeDefaultPhoneController();
-            this.ShowPhoneUI();
+            this.ShowPhoneUi();
         }
         this.HideModChat();
+    }
+
+    // Toggle contacts input
+    public func ToggleContactInput(value: Bool) {
+        if IsDefined(this.defaultPhoneController) {
+            if value {
+                this.defaultPhoneController.EnableContactsInput();
+            } else {
+                this.defaultPhoneController.DisableContactsInput();
+            }
+        } 
     }
 
     private func ToggleContactList(value: Bool) {
@@ -478,6 +490,15 @@ public class GenerativeTextingSystem extends ScriptableService {
         } else {
             this.typingIndicator.SetVisible(false);
         }
+    }
+
+    // Delay enabling contact input
+    private func DelayedContactInput() {
+        let delaySystem = GameInstance.GetDelaySystem(GetGameInstance());
+        let delay = 0.25;
+        let isAffectedByTimeDilation: Bool = false;
+
+        delaySystem.DelayCallback(ContactInputDelayCallback.Create(), delay, isAffectedByTimeDilation);
     }
 
     // Build a message for the player or NPC

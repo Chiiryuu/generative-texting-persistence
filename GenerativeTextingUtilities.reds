@@ -4,7 +4,7 @@ public func GetApiKey() -> String {
 }
 
 public func GetOpenAiApiKey() -> String {
-    return "0000000000";
+    return "";
 }
 
 // Get the character's full display name
@@ -59,7 +59,7 @@ public func isContactValidForAI(character: String) -> Bool{
 
 }
 
-public func GetCharacterSettingByContactName(character: String) -> CharacterSetting{
+public func GetCharacterSettingByContactName(character: String) -> CharacterSetting {
     switch character {
         case "panam":
             return CharacterSetting.Panam;
@@ -82,7 +82,6 @@ public func GetCharacterSettingByContactName(character: String) -> CharacterSett
         default:
             return CharacterSetting.Panam;
     }
-
 }
 
 // Get the character's name for the contact list widget

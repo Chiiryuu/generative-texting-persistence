@@ -32,7 +32,7 @@ public class HttpRequestSystem extends ScriptableSystem {
   private func OnDetach() {
     this.m_callbackSystem.UnregisterCallback(n"Session/Ready", this, n"OnSessionReady");
     this.m_callbackSystem = null;
-	this.m_storage = null;
+	  this.m_storage = null;
   }
 
   /// Game events ///
@@ -313,7 +313,7 @@ public class HttpRequestSystem extends ScriptableSystem {
 
     this.AppendToHistory(text, false);
     this.ToggleIsGenerating(false);
-	this.WriteLastExchangeToFile(GetCharacterLocalizedName(GetTextingSystem().character));
+	  this.WriteLastExchangeToFile(GetCharacterLocalizedName(GetTextingSystem().character));
   }
 
   // Estimate tokens based on number of words in prompt where 75 words roughly = 100 tokens
@@ -622,6 +622,21 @@ public class TypingDelayCallback extends DelayCallback {
 
   public static func Create() -> ref<TypingDelayCallback> {
     let self = new TypingDelayCallback();
+
+    return self;
+  }
+}
+
+// Delay callback for showing typing indicator
+public class ContactInputDelayCallback extends DelayCallback {
+
+  public func Call() {
+    let TextingSystem = GameInstance.GetScriptableServiceContainer().GetService(n"GenerativeTextingSystem") as GenerativeTextingSystem;
+    TextingSystem.ToggleContactInput(true);
+  }
+
+  public static func Create() -> ref<ContactInputDelayCallback> {
+    let self = new ContactInputDelayCallback();
 
     return self;
   }
